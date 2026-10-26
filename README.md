@@ -49,6 +49,8 @@ Contraseña de todos: **`password`**.
 
 Todo se ejecuta dentro de los contenedores:
 
+> `migrate:fresh --seed` elimina las tablas existentes y las crea de nuevo con datos demo. No lo ejecutes en una base con información que quieras conservar.
+
 | Tarea | Comando |
 |---|---|
 | Encender / apagar | `docker compose up -d` / `docker compose stop` |
