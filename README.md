@@ -4,7 +4,7 @@ Plataforma SaaS multi-organización de **IT Service Management** (mesa de ayuda)
 
 > **Primer avance (semana 6).** Este repositorio contiene lo que pide la guía para la Unidad I: la aplicación web completa, su base de datos y la API REST inicial. La inteligencia artificial (clasificar tickets y sugerir soluciones desde la base de conocimiento) se integrará en la Unidad II; el esquema de la base ya incluye sus tablas, vacías por ahora.
 
-Proyecto #9 del curso de Nubes (UNS). Laravel 13 · PHP 8.4 · PostgreSQL 17 · Blade + JavaScript vanilla · Docker.
+Proyecto N°9 del curso de Nubes (UNS). Laravel 13 · PHP 8.4 · PostgreSQL 17 · Blade + JavaScript vanilla · Docker.
 
 ## Requisitos
 
