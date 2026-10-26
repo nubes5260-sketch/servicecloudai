@@ -32,7 +32,7 @@
       <div class="nav-section-label">Operación</div>
       <nav id="mainNav">
         @foreach ($menu as $clave => $item)
-          <a href="{{ route($item['ruta']) }}" class="nav-item {{ $moduloActivo === $clave ? 'active' : '' }}" title="{{ $item['etiqueta'] }}">
+          <a href="{{ route($item['ruta']) }}" class="nav-item {{ $moduloActivo === $clave ? 'active' : '' }} {{ $clave === 'configuracion' ? 'nav-item-config' : '' }}" title="{{ $item['etiqueta'] }}">
             <i data-lucide="{{ $item['icono'] }}"></i><span>{{ $item['etiqueta'] }}</span>
             @if ($clave === 'notificaciones')<em class="nav-count" data-notif-count @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas }}</em>@endif
           </a>
