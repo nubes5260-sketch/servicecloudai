@@ -53,7 +53,7 @@ Todo se ejecuta dentro de los contenedores:
 |---|---|
 | Encender / apagar | `docker compose up -d` / `docker compose stop` |
 | Reconstruir la base con datos demo | `docker compose exec app php artisan migrate:fresh --seed` |
-| Tests (142, contra `servicecloud_ai_test`) | `docker compose exec app php artisan test` |
+| Tests (contra `servicecloud_ai_test`) | `docker compose exec app php artisan test` |
 | Formato PSR-12 | `docker compose exec -u root app ./vendor/bin/pint` |
 | Revisar SLA a mano | `docker compose exec app php artisan sla:revisar` |
 | Agregar un paquete | `docker compose exec -u root app sh -c "composer require vendor/paquete && chown -R www-data:www-data vendor"` |
