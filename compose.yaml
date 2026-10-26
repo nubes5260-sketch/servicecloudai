@@ -74,14 +74,20 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
+    # libpq exige permisos 600 en el pgpass; desde una carpeta de Windows no se pueden fijar, por eso se copia.
+    entrypoint: ["/bin/sh", "-c", "cp /pgadmin-config/pgpass /tmp/pgpass && chmod 600 /tmp/pgpass && exec /entrypoint.sh"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@servicecloud.ai
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: "False"
+      # Solo desarrollo: sin contraseña maestra y con el servidor "ServiceCloud" ya registrado.
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_SERVER_JSON_FILE: /pgadmin-config/servers.json
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
+      - ./docker/pgadmin:/pgadmin-config:ro
     depends_on:
       - pgsql
     restart: unless-stopped

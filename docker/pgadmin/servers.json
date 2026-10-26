@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "ServiceCloud",
+      "Group": "Servers",
+      "Host": "pgsql",
+      "Port": 5432,
+      "MaintenanceDB": "servicecloud_ai",
+      "Username": "servicecloud",
+      "SSLMode": "prefer",
+      "PassFile": "/tmp/pgpass"
+    }
+  }
+}
