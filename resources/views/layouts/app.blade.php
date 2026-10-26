@@ -43,6 +43,9 @@
           @csrf
           <button type="submit" class="nav-item"><i data-lucide="log-out"></i><span>Cerrar sesión</span></button>
         </form>
+          <div style="font-size: 0.75rem; color: #888; text-align: center; margin-top: 1rem; padding-bottom: 0.5rem;">
+            &copy; {{ date('Y') }} ServiceCloud AI
+        </div>
       </div>
     </aside>
 
