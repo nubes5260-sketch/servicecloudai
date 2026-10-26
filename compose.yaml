@@ -1,0 +1,92 @@
+# ServiceCloud AI — entorno de desarrollo
+# Levantar:   docker compose up -d --build
+# App:        http://localhost:8000
+# pgAdmin:    http://localhost:5050  (admin@servicecloud.ai / admin)
+
+services:
+  app:
+    build:
+      context: .
+      target: development
+      args:
+        USER_ID: ${USER_ID:-}
+        GROUP_ID: ${GROUP_ID:-}
+    image: servicecloudai-app:dev
+    ports:
+      - "${APP_PORT:-8000}:8080"
+    volumes:
+      - .:/var/www/html
+      # vendor/ vive en un volumen de Docker (sistema de archivos Linux): en Windows leer miles
+      # de archivos desde la carpeta montada hacía que cada petición tardara 2-5 s.
+      # Se llena con: docker compose exec -T -u root app sh -c "composer install && chown -R www-data:www-data vendor"
+      - vendor:/var/www/html/vendor
+    environment:
+      # OPcache también en desarrollo; con REVALIDATE_FREQ=0 los cambios de código se ven al instante.
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
+      PHP_OPCACHE_REVALIDATE_FREQ: "0"
+      SSL_MODE: "off"
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Programador de tareas (sla:revisar cada 5 min, contratos:actualizar-estados diario)
+  scheduler:
+    image: servicecloudai-app:dev
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+    command: ["php", "/var/www/html/artisan", "schedule:work"]
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ["CMD", "healthcheck-schedule"]
+      start_period: 10s
+    environment:
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
+      PHP_OPCACHE_REVALIDATE_FREQ: "0"
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      app:
+        condition: service_started
+    restart: unless-stopped
+
+  pgsql:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: servicecloud_ai
+      POSTGRES_USER: servicecloud
+      POSTGRES_PASSWORD: secret
+      TZ: America/Lima
+    ports:
+      - "${FORWARD_DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/pgsql/01-crear-bd-test.sql:/docker-entrypoint-initdb.d/01-crear-bd-test.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U servicecloud -d servicecloud_ai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@servicecloud.ai
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - pgsql
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  pgadmin:
+  vendor:

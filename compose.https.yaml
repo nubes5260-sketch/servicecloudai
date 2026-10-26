@@ -1,0 +1,32 @@
+# ServiceCloud AI — HTTPS con dominio propio (se suma a compose.prod.yaml)
+#
+#   docker compose -f compose.prod.yaml -f compose.https.yaml up -d --build
+#
+# Requisitos en el .env del servidor:
+#   DOMINIO=tudominio.com            (registro DNS tipo A apuntando a la IP del servidor)
+#   APP_URL=https://tudominio.com
+#   APP_PORT=127.0.0.1:8081          (la app ya no se publica en el puerto 80; la atiende Caddy)
+#   TRUSTED_PROXIES=*
+# Guía: docs/DESPLIEGUE-HOSTINGER-VPS.md (paso 12)
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    environment:
+      DOMINIO: ${DOMINIO:?Define DOMINIO en el archivo .env}
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # certificados (no borrar: Let's Encrypt limita las emisiones)
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:
